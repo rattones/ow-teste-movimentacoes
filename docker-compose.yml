@@ -8,5 +8,5 @@ services:
       MYSQL_USER: owteste
       MYSQL_PASSWORD: 123456Ow
     volumes:
-      ${PWD}/db-files:/var/lib/mysql
+      - ${PWD}/db-files:/var/lib/mysql
     restart: on-failure
