@@ -2,7 +2,7 @@ version: '3.4'
 services:
   database:
     image: mariadb:10.2
-    enviroment:
+    environment:
       MYSQL_ROOT_PASSWORD:  123OwTeste987
       MYSQL_DATABASE: owmovimentacoes
       MYSQL_USER: owteste
