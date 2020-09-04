@@ -12,4 +12,4 @@ services:
     ports: 
       - 3308:3306
     restart: on-failure
-    container-name: ow-teste
+    name: ow-teste
