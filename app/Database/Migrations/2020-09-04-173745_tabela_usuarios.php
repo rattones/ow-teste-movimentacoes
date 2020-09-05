@@ -15,7 +15,7 @@ class TabelaUsuarios extends Migration
 				'constraint' => 50,
 			],
 			// nome do usuário
-			'name' => [
+			'nome' => [
 				'type' => 'varchar',
 				'constraint' => 200,
 			],
@@ -25,7 +25,7 @@ class TabelaUsuarios extends Migration
 				'constraint' => 200,
 			],
 			// data de aniversário
-			'brithday' => [
+			'data_nascimento' => [
 				'type' => 'date',
 			],
 			// campo de controle de criação do registro
