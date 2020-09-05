@@ -4,8 +4,6 @@ namespace App\Controllers;
 use App\Models\UsuariosModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Controller;
-use CodeIgniter\Exceptions\ModelException;
-use stdClass;
 
 class Usuarios extends Controller
 {
