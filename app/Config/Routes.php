@@ -38,7 +38,14 @@ $routes->post('/usuarios', 'Usuarios::create');
 $routes->get('/usuarios', 'Usuarios::list');
 $routes->get('/usuarios/(:any)', 'Usuarios::get');
 $routes->delete('/usuarios/(:any)', 'Usuarios::delete');
-
+// Movimentações
+$routes->post('/movimentacoes', 'Movimentacoes::create');
+$routes->get('/movimentacoes', 'Movimentacoes::list');
+$routes->get('/movimentacoes/(:num)', 'Movimentacoes::list');
+$routes->get('/movimentacoes/(:any)', 'Movimentacoes::get');
+$routes->delete('/movimentacoes/(:any)', 'Movimentacoes::delete');
+// Relatórios
+$routes->post('/report', 'Movimentacoes::report');
 
 /**
  * --------------------------------------------------------------------

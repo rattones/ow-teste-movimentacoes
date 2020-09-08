@@ -4,8 +4,6 @@ namespace App\Controllers;
 use App\Models\UsuariosModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Controller;
-use CodeIgniter\Exceptions\ModelException;
-use stdClass;
 
 class Usuarios extends Controller
 {
@@ -14,26 +12,26 @@ class Usuarios extends Controller
   /**
    * inserir um novo usuários
    */
-  public function create() 
+  public function create()
   {
     $data= $this->request->getJSON();
-    
+
     $model = new UsuariosModel();
 
     $data = [
       "id" => \App\Libraries\UUID::v4(),
       "nome" => $data->nome,
       "email" => $data->email,
-      "data_nascimento" => $data->data_nascimento,
+      "data_nascimento" => @$data->data_nascimento,
       "created_at" => date('Y-m-d H:i:s'),
       "updated_at" => "null",
     ];
 
-    if (!!$model->insert($data)) {
+    if (!(!!$model->insert($data, false))) {
       return $this->fail($model->validation->getErrors());
-    } 
+    }
 
-    return $this->respond($data);    
+    return $this->respond($data);
   }
 
   /**
@@ -79,7 +77,7 @@ class Usuarios extends Controller
 
     $model->delete($params, true);
 
-    if ( is_null($model->find($params)) ) { 
+    if ( is_null($model->find($params)) ) {
       return $this->respondNoContent('Usuário não encontrado');
     }
 

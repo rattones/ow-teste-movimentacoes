@@ -12,8 +12,8 @@ class UsuariosModel extends Model
 
   protected $allowedFields = [
     'id',
-    'nome', 
-    'email', 
+    'nome',
+    'email',
     'data_nascimento',
     'created_at',
     'updated_at',
@@ -32,13 +32,16 @@ class UsuariosModel extends Model
   protected $validationMessages = [
     "nome" => [
       "required" => "Campo obrigatório: Nome",
+      "alpha_numeric_space" => "Caractere inválido",
     ],
     "email" => [
       "required" => "Campo obrigatório: Email",
+      "valid_email" => "Email inválido",
       "is_unique" => "Email já cadastrado",
     ],
     "data_nascimento" => [
-      "required" => "Campo obrigatório: Data de Nascimento",      
+      "required" => "Campo obrigatório: Data de Nascimento",
+      "valid_date" => "Data de Nascimento inválida",
     ],
   ];
   // protected $skipValidation     = false;
