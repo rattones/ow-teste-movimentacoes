@@ -236,7 +236,7 @@ class Movimentacoes extends BaseController
   {
     $total= $this->getSaldo($token);
 
-    if (isnull($total)) {
+    if (is_null($total)) {
       return $this->respondNoContent('Nenhuma movimentação encontrada');
     }
 
