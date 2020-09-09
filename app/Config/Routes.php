@@ -38,7 +38,7 @@ $routes->post('/usuarios', 'Usuarios::create');
 $routes->get('/usuarios', 'Usuarios::list');
 $routes->get('/usuarios/(:any)', 'Usuarios::get');
 $routes->delete('/usuarios/(:any)', 'Usuarios::delete');
-$routes->post('/usuarios/addSaldo', 'Usuarios::addSaldo');
+$routes->put('/usuarios', 'Usuarios::addSaldo');
 // Movimentações
 $routes->post('/movimentacoes', 'Movimentacoes::create');
 $routes->get('/movimentacoes', 'Movimentacoes::list');
