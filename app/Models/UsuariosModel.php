@@ -15,6 +15,7 @@ class UsuariosModel extends Model
     'nome',
     'email',
     'data_nascimento',
+    'saldo',
     'created_at',
     'updated_at',
   ];
@@ -27,7 +28,8 @@ class UsuariosModel extends Model
   protected $validationRules    = [
     "nome" => "required|alpha_numeric_space",
     "email" => "required|valid_email|is_unique[usuarios.email]",
-    "data_nascimento" => "required|valid_date"
+    "data_nascimento" => "required|valid_date",
+    "saldo" => "numeric"
   ];
   protected $validationMessages = [
     "nome" => [
@@ -43,6 +45,9 @@ class UsuariosModel extends Model
       "required" => "Campo obrigatório: Data de Nascimento",
       "valid_date" => "Data de Nascimento inválida",
     ],
+    "saldo" => [
+      "numeric" => "Saldo deve ser numérico",
+    ]
   ];
   // protected $skipValidation     = false;
 }

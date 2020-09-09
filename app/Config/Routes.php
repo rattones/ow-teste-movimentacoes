@@ -38,6 +38,7 @@ $routes->post('/usuarios', 'Usuarios::create');
 $routes->get('/usuarios', 'Usuarios::list');
 $routes->get('/usuarios/(:any)', 'Usuarios::get');
 $routes->delete('/usuarios/(:any)', 'Usuarios::delete');
+$routes->post('/usuarios/addSaldo', 'Usuarios::addSaldo');
 // Movimentações
 $routes->post('/movimentacoes', 'Movimentacoes::create');
 $routes->get('/movimentacoes', 'Movimentacoes::list');
@@ -46,6 +47,8 @@ $routes->get('/movimentacoes/(:any)', 'Movimentacoes::get');
 $routes->delete('/movimentacoes/(:any)', 'Movimentacoes::delete');
 // Relatórios
 $routes->post('/report', 'Movimentacoes::report');
+// Saldo
+$routes->get('/saldo', 'Movimentacoes::saldo');
 
 /**
  * --------------------------------------------------------------------

@@ -3,24 +3,12 @@ namespace App\Controllers;
 
 use App\Models\MovimentacoesModel;
 use CodeIgniter\API\ResponseTrait;
-use CodeIgniter\Controller;
 use DateInterval;
 use DateTime;
 
-class Movimentacoes extends Controller
+class Movimentacoes extends BaseController
 {
   use ResponseTrait;
-
-  /**
-   * retorna o token : usuario_id da movimentacao
-   */
-  private function getToken(): string
-  {
-    // buscando e tratando token
-    $token= $this->request->getHeaders();
-    $aux= explode(' ', $token['Authorization']->getValue());
-    return $aux[1];
-  }
 
   /**
    * inserir um nova movimentação
@@ -49,12 +37,17 @@ class Movimentacoes extends Controller
     return $this->respond($data);
   }
 
-  public function list()
+  /**
+   * busca os dados de movimentação do usuário
+   */
+  public function getList(string $token= null, $all= false)
   {
-    $token= $this->getToken();
-    $pag = (!!$this->request->uri->getSegment(2))? $this->request->uri->getSegment(2): 0;
-    $offset= 10;
-    $limit= $pag*$offset;
+    if (is_null($token)) {
+      $token= $this->getToken();
+      $pag = (!!$this->request->uri->getSegment(2))? $this->request->uri->getSegment(2): 0;
+      $offset= 10;
+      $limit= $pag*$offset;
+    }
 
     $model= new MovimentacoesModel();
     $usuario= new \App\Models\UsuariosModel();
@@ -63,16 +56,36 @@ class Movimentacoes extends Controller
 
     $list['usuario']= $usuario->find($token);
 
-    $list['movimentacoes']= $model->where('usuario_id', $token)
-                ->orderBy('datahora, created_at')
-                ->findAll($limit, $offset);
+    if ($all) {
+      $list['movimentacoes']= $model->where('usuario_id', $token)
+                  ->orderBy('datahora, created_at')
+                  ->findAll();
+    } else {
+      $list['movimentacoes']= $model->where('usuario_id', $token)
+                  ->orderBy('datahora, created_at')
+                  ->findAll($limit, $offset);
+    }
+
+    if (empty($list)) {
+      return [];
+    }
+
+    return $list;
+
+  }
+
+  /**
+   * retorna a lista de movimentações do usuário
+   */
+  public function list()
+  {
+    $list= $this->getList();
 
     if (empty($list)) {
       return $this->respondNoContent('Nenhuma movimentação encontrada');
     }
 
     return $this->respond($list);
-
   }
 
   /**
@@ -137,6 +150,14 @@ class Movimentacoes extends Controller
   {
     $model= new MovimentacoesModel();
     $data= $this->request->getJSON();
+    $token= $this->getToken();
+
+    if (empty($token)) {
+      return $this->fail('Token de autenticação do usuário necessário', 403);
+    }
+
+    $userModel= new \App\Models\UsuariosModel();
+    $usuario= $userModel->find($token);
 
     if (is_null($data)) {
       return $this->respond(['message'=>'Parâmetro obrigatório']);
@@ -162,17 +183,63 @@ class Movimentacoes extends Controller
       return $this->respond(['message'=>'Tipo inválido'], 400);
     }
 
-    // echo '<pre>'; print_r([$condicao]); die;
-
     if (empty($condicao)) {
-      $list= $model->orderBy('datahora, created_at')
+      $list= $model->where('usuario_id', $token)
+                ->orderBy('datahora, created_at')
                 ->findAll();
     } else {
-      $list= $model->where($condicao)
+      $list= $model->where('usuario_id', $token)
+                ->where($condicao)
                 ->orderBy('datahora, created_at')
                 ->findAll();
     }
 
-    return $this->respond($list);
+    // gerar dados para arquivo .csv
+    $header= "{$usuario['nome']};{$usuario['email']};{$usuario['data_nascimento']}"."\n";
+    $content= "";
+    foreach ($list as $item) {
+      $content.= "{$item['datahora']};{$item['motivo']};{$item['valor']};{$item['tipo']}"."\n";
+    }
+    $saldo= $this->getSaldo($token);
+    $hoje= date('Y-m-d H:i:s');
+    $footer= "{$hoje};saldo total;{$saldo}";
+
+    $fileContent= $header.$content.$footer;
+    $filename= date('YmsHis')."{$usuario['id']}.csv";
+
+    return $this->response->download($filename, $fileContent);
+  }
+
+  /**
+   * retorna o valor do saldo
+   */
+  private function getSaldo(string $token= null): ?float
+  {
+    $list= $this->getList($token, true);
+
+    if (empty($list['movimentacoes'])) {
+      return null;
+    }
+
+    $total= $list['usuario']['saldo'];
+    foreach ($list['movimentacoes'] as $mov) {
+      $total+= ($mov['tipo'] == 'débito')? -1*$mov['valor']: $mov['valor'];
+    }
+
+    return $total;
+  }
+
+  /**
+   * retorna o saldo do usuário
+   */
+  public function saldo(string $token= null)
+  {
+    $total= $this->getSaldo($token);
+
+    if (isnull($total)) {
+      return $this->respondNoContent('Nenhuma movimentação encontrada');
+    }
+
+    return $this->respond(['saldo'=>$total]);
   }
 }
